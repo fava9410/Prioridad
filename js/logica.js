@@ -1,10 +1,10 @@
 $(document).ready(function(){
-    var tiemposRafaga = ["Tiempo Rafaga"], prioridad = ["Prioridad"], procesos = ["Proceso"], llegada = ["Tiempo de llegada"], tiempoFinalizacion = ["Tiempo de Finalizacion"], tiempoRetorno = ["Tiempo de Retorno"], tiempoEspera = ["Tiempo de Espera"], tiempoComienzo = ["Tiempo de Comienzo"];
+    var tiemposRafaga = ["Tiempo Rafaga"], envejecer = ["Envejecimientos"], prioridad = ["Prioridad"], procesos = ["Proceso"], llegada = ["Tiempo de llegada"], tiempoFinalizacion = ["Tiempo de Finalizacion"], tiempoRetorno = ["Tiempo de Retorno"], tiempoEspera = ["Tiempo de Espera"], tiempoComienzo = ["Tiempo de Comienzo"];
     var nombresProcesos = ["A","B","C","D","E","F","G","H","I","J","K","L"];
     var nomcolores = ["Crimson","blue","green","brown","yellow","purple","magenta","gray","Coral","DarkGreen"];
     var colores = ["red","white"];
     var alea = 0, intervalo = 10, tamaño = 20, contador = 0, contadorProcesos = 0;
-    var matriz = [procesos,prioridad,llegada,tiemposRafaga,tiempoComienzo,tiempoFinalizacion,tiempoRetorno,tiempoEspera];  
+    var matriz = [procesos,prioridad,envejecer,llegada,tiemposRafaga,tiempoComienzo,tiempoFinalizacion,tiempoRetorno,tiempoEspera];  
     var listos = [], ejecutando = [];
 
     $("#agregar").click(function(){
@@ -19,7 +19,7 @@ $(document).ready(function(){
     setInterval(proceso,1000);
 
     function intercambio(){
-        if(ejecutando != 0 && ejecutando[0].prioridad>listos[0].prioridad){
+        if(ejecutando != 0 && listos != 0 && ejecutando[0].prioridad>listos[0].prioridad){
             listos.push(ejecutando.shift());
             listos[listos.length-1].llegada = contador;
             llenarDatos();
@@ -27,8 +27,21 @@ $(document).ready(function(){
         }
     }
 
+    function envejecimiento(){
+        for(var i =0; i<listos.length; i++){
+            if(contador-listos[i].llegada == 7){       
+                listos[i].llegada = contador;         
+                listos[i].prioridad--;
+                listos[i].envejecer++;
+                console.log(listos[i]);
+                llenarDatos();
+            }
+        }        
+        intercambio();
+    }
+
     function agregarListos(){    
-        listos.push({"proceso": nombresProcesos[contadorProcesos-1], "prioridad": Math.round(Math.random()*3+1), "llegada": contador, "rafaga": Math.round(Math.random()*6+1), "finalizacion": 0});  
+        listos.push({"proceso": nombresProcesos[contadorProcesos-1], "prioridad": Math.round(Math.random()*3+1), "llegada": contador, "rafaga": Math.round(Math.random()*6+1), "finalizacion": 0, "envejecer": 0});  
         procesos.push(listos[listos.length-1].proceso);
         prioridad.push(listos[listos.length-1].prioridad);
         llegada.push(listos[listos.length-1].llegada);
@@ -63,6 +76,7 @@ $(document).ready(function(){
                     tiempoFinalizacion[j] = listos[i].finalizacion;
                     tiempoRetorno[j] = listos[i].retorno;
                     tiempoEspera[j] = listos[i].espera;
+                    envejecer[j] = listos[i].envejecer;
                 }
             }
         }
@@ -100,6 +114,7 @@ $(document).ready(function(){
             ejecutando[0] = listos.shift();
         }	   
         pintar_procesos();  
+        envejecimiento();
         if(ejecutando != 0){
             ejecutando[0].rafaga--;
         }
